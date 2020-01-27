@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>来吧！获取数据吧！</title>
+</head>
+<body>
+<button onclick="getData()">获取数据</button>
+<script>
+  function getData() {
+    const query = `
+        query Account($username: String, $city: String) {
+            account(username: $username) {
+              name,
+              sex,
+              age,
+              department,
+              salary(city: $city)
+            }
+        }
+      `
+    const variables = {username: '你王八', city: "上海"}
+
+    fetch('/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      })
+    })
+      .then(res => {
+        console.log('请求成功')
+        console.log(res)
+      })
+      .then(res2 => {
+        console.log('看一下res2有什么结果')
+        console.log(res2)
+      })
+      .catch(error => {
+        console.error('请求失败')
+        console.error(error)
+      })
+  }
+</script>
+</body>
+</html>

@@ -16,7 +16,6 @@ let schema = buildSchema(`
 `)
 
 let root = {
-  hello: () => 'Hello world!',
   account: ({username}) => {
     const name = username
     const sex = 'female'
@@ -49,4 +48,7 @@ app.use('/graphql', graphqlHTTP({
   rootValue: root,
   graphiql: true,
 }))
-app.listen(4000, () => console.log('Now browse to localhost:4000/graphql'))
+
+app.use(express.static('public'))
+
+app.listen(3000, () => console.log('Now browse to localhost:4000/graphql'))
