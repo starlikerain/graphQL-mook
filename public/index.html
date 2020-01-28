@@ -9,14 +9,21 @@
 <script>
   function getData() {
     const query = `
-        query Account($username: String, $city: String) {
-            account(username: $username) {
-              name,
-              sex,
-              age,
-              department,
-              salary(city: $city)
-            }
+        input AccountInput {
+            name: String
+            age: Int
+            sex: String
+            department: String
+        }
+        type Account {
+            name: String
+            age: Int
+            sex: String
+            department: String
+        }
+        query Mutation {
+            createAccount(input: AccountInput): Account
+            updateAccount(id: ID!, input: AccountInput): Account
         }
       `
     const variables = {username: '你王八', city: "上海"}

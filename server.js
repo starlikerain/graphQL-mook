@@ -2,43 +2,72 @@ let express = require('express')
 let graphqlHTTP = require('express-graphql')
 let {buildSchema} = require('graphql')
 
+/**
+ * 查询语句
+ *
+mutation {
+  createAccount(input: {
+    name: "哈撒给"
+  	age: 18
+    sex: "female"
+  	department: "研发部门"
+  }) {
+    name
+    age
+    sex
+    department
+  }
+}
+
+ query {
+  accounts {
+    name
+    age
+    sex
+    department
+  }
+}
+ * @type {GraphQLSchema}
+ */
 let schema = buildSchema(`
-  type Account {
-    name: String
-    age: Int
-    sex: String
-    department: String
-    salary(city: String): Int  
-  }
-  type Query {
-    account(username: String) : Account
-  }
+        input AccountInput {
+            name: String
+            age: Int
+            sex: String
+            department: String
+        }
+        type Account {
+            name: String
+            age: Int
+            sex: String
+            department: String
+        }
+        type Mutation {
+            createAccount(input: AccountInput): Account
+            updateAccount(id: ID!, input: AccountInput): Account
+        }
+        type Query {
+          accounts: [Account]
+        } 
 `)
 
+const fakeDB = {}
+
 let root = {
-  account: ({username}) => {
-    const name = username
-    const sex = 'female'
-    const age = 18
-    const department = 'developer'
-    const salary = ({city}) => {
-      switch (city) {
-        case '北京':
-        case '上海':
-        case '广州':
-        case '深圳':
-          return 10000
-        default:
-          return 5000
-      }
+  createAccount: ({ input }) => {
+    fakeDB[input.name] = input
+    return fakeDB[input.name]
+  },
+  updateAccount: ({id, input}) => {
+    fakeDB[id] = Object.assign({}, fakeDB[input.name], input) // updatedAccount
+    return fakeDB[id]
+  },
+  accounts: () => {
+    let arr = []
+    for(const key in fakeDB){
+      arr.push(fakeDB[key])
     }
-    return {
-      name,
-      sex,
-      age,
-      department,
-      salary
-    }
+    return arr
   }
 }
 
